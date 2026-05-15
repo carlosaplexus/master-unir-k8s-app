@@ -15,7 +15,7 @@ spec:
         app: fintech-db
     spec:
       securityContext:
-        runAsNonRoot: true
+        runAsNonRoot: false
       containers:
         - name: postgres
           image: postgres:15-alpine
