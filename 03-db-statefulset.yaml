@@ -40,13 +40,8 @@ spec:
           volumeMounts:
             - name: db-storage
               mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
-    - metadata:
-        name: db-storage
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: gp3-storage
-        resources:
-          requests:
-            storage: 5Gi
+          volumes:
+            - name: db-storage
+              emptyDir: {}
+
 
