@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fintech-db
+  namespace: fintech
+spec:
+  serviceName: fintech-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fintech-db
+  template:
+    metadata:
+      labels:
+        app: fintech-db
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_DB
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3-storage
+        resources:
+          requests:
+            storage: 5Gi
+

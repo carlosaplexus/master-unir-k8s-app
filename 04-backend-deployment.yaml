@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fintech-backend
+  namespace: fintech
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fintech-backend
+  template:
+    metadata:
+      labels:
+        app: fintech-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: backend
+          image: caedockerid/fintech-backend:latest
+          env:
+            - name: DB_HOST
+              value: fintech-db
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fintech-db-secret
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
