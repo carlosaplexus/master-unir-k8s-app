@@ -14,7 +14,7 @@ spec:
         app: fintech-backend
     spec:
       securityContext:
-        runAsNonRoot: true
+        runAsNonRoot: false
       containers:
         - name: backend
           image: caedockerid/fintech-backend:latest
